@@ -6,8 +6,12 @@ client = MongoClient("mongodb://localhost:27017/")
 db = client['test']
 print "DB opened"
 
+#Add FOR loop to find each file in the folder, extract data from file, import to DB and continue
+
 print "Loading file"
-wb = openpyxl.load_workbook('C:\Users\WillemT\Documents\Work\Projects\Projects 2015\Data Analytics\Python_AMI_Data_Analysis\TrescimoAMIData\\1202124660978.xlsx')
+filepath = 'C:\Users\WillemT\Documents\Work\Projects\Projects 2015\Data Analytics\Python_AMI_Data_Analysis\TrescimoAMIData\\'
+filename = '1202124660978'
+wb = openpyxl.load_workbook(filepath + filename + '.xlsx')
 sheet = wb.get_sheet_by_name('Sheet1')
 print "File loaded"
 customer = str(sheet.rows[1][0].value)
