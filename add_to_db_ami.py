@@ -12,14 +12,14 @@ time_half_hour = ['00:00','00:30','01:00','01:30','02:00','02:30','03:00','03:30
                   '16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30',
                   '20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30']
 
-filepath = 'C:\Users\WillemT\Documents\Work\Projects\Projects 2015\Data Analytics\Python_AMI_Data_Analysis\TrescimoAMIData\\'
+filepath = open('file_path.txt').read()
 for file in os.listdir(filepath):
     if file.endswith(".xlsx"):
         wb = xlrd.open_workbook(filepath + file)
         if wb.sheet_names()[0] == 'Sheet1':
             start = datetime.now()
             sheet = wb.sheet_by_name('Sheet1')
-            number_of_entries = 1000#sheet.nrows
+            number_of_entries = sheet.nrows
             customer = str(sheet.row(1)[0])[7:-2]
             bulk = db[customer].initialize_ordered_bulk_op()
             for i in range(1,number_of_entries):
@@ -34,7 +34,7 @@ for file in os.listdir(filepath):
         else:
             start = datetime.now()
             sheet = wb.sheet_by_name('Meter Data')
-            number_of_entries = 1000#sheet.nrows
+            number_of_entries = sheet.nrows
             customer = str(sheet.row(0)[0])[-14:-1]
             bulk = db[customer].initialize_ordered_bulk_op()
             for i in range(10,number_of_entries):
