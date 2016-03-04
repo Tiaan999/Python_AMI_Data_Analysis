@@ -1,10 +1,10 @@
-from pymongo import MongoClient
+import pymongo
 from datetime import datetime
 import os
 import xlrd
 
 main_start = datetime.now()
-db = MongoClient("mongodb://localhost:27017/")['test']
+db = pymongo.MongoClient("mongodb://localhost:27017/")['test']
 time_half_hour = ['00:00','00:30','01:00','01:30','02:00','02:30','03:00','03:30',
                   '04:00','04:30','05:00','05:30','06:00','06:30','07:00','07:30',
                   '08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30',
@@ -13,7 +13,6 @@ time_half_hour = ['00:00','00:30','01:00','01:30','02:00','02:30','03:00','03:30
                   '20:00','20:30','21:00','21:30','22:00','22:30','23:00','23:30']
 
 filepath = 'C:\Users\WillemT\Documents\Work\Projects\Projects 2015\Data Analytics\Python_AMI_Data_Analysis\TrescimoAMIData\\'
-filename = ''
 for file in os.listdir(filepath):
     if file.endswith(".xlsx"):
         wb = xlrd.open_workbook(filepath + file)
@@ -27,13 +26,11 @@ for file in os.listdir(filepath):
                 date = datetime(*xlrd.xldate_as_tuple(sheet.row(i)[2].value,wb.datemode)).strftime('%Y/%m/%d')
                 time = str(time_half_hour.index(datetime(*xlrd.xldate_as_tuple(sheet.row(i)[2].value,wb.datemode)).strftime('%H:%M')) + 1)
                 value = int(sheet.row(i)[3].value)
-                bulk.find({"date": date}).upsert().update({"$set": {'measurements.' + time: value}})
+                bulk.find({"date": date}).upsert().update({"$set": {'energy_kwh.' + time: value}})
             bulk.execute()
             end = datetime.now()
             print str(number_of_entries) + " entries were added to the DB in " + str((end - start).seconds) + " seconds, from " + file + "."
-            doc = db[customer].find().skip(db[customer].count() - 1)
-            for i in doc:
-                print i
+            print db[customer].find().skip(db[customer].count() - 1)[0]
         else:
             start = datetime.now()
             sheet = wb.sheet_by_name('Meter Data')
@@ -44,13 +41,11 @@ for file in os.listdir(filepath):
                 date = datetime.strptime(sheet.row(i)[0].value,'%Y/%m/%d %H:%M').strftime('%Y/%m/%d')
                 time = str(time_half_hour.index(datetime.strptime(sheet.row(i)[0].value,'%Y/%m/%d %H:%M').strftime('%H:%M')) + 1)
                 value = int(sheet.row(i)[1].value)
-                bulk.find({"date": date}).upsert().update({"$set": {'measurements.' + time: value}})
+                bulk.find({"date": date}).upsert().update({"$set": {'energy_kwh.' + time: value}})
             bulk.execute()
             end = datetime.now()
             print str(number_of_entries) + " entries were added to the DB in " + str((end - start).seconds) + " seconds, from x" + file + "."
-            doc = db[customer].find().skip(db[customer].count() - 1)
-            for i in doc:
-                print i
+            print db[customer].find().skip(db[customer].count() - 1)[0]
 
 main_end = datetime.now()
-print "Transfer of " + str(number_of_entries) + " entries from 22 files, was completed in " + str((main_end - main_start).seconds) + " seconds."
+print "Transfer from 22 files, was completed in " + str((main_end - main_start).seconds) + " seconds."
