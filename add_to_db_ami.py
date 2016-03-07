@@ -16,7 +16,7 @@ time_half_hour = ['00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00',
 filepath = open('file_path.txt').read()
 for file_f in os.listdir(filepath):
     if file_f.endswith(".xlsx"):
-        wb = xlrd.open_workbook(filepath + file_f)
+        wb = xlrd.open_workbook(filepath + file_f)  # Causes significant delay
         if wb.sheet_names()[0] == 'Sheet1':
             start = datetime.now()
             sheet = wb.sheet_by_name('Sheet1')
